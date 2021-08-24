@@ -8,6 +8,7 @@ int main() {
   file = fopen("longwrite.txt", "w");
   for (int i = 0; i < 360; ++i) {
 	  fprintf(file, "this is a line...\n");
+	  fflush(file);
 	  printf("wrote one line...\n");
 	  nanosleep((const struct timespec[]){{0, 500000000L}}, NULL);
   }
