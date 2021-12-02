@@ -1,0 +1,4 @@
+wiz.rm("./build")
+wiz.mk_dir("./build")
+wiz.cmd("cmake", {".."}, "./build", true, true)
+wiz.cmd("cmake", {"--build", "."}, "./build", true, true)
