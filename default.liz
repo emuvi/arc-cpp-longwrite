@@ -1,4 +1,0 @@
-liz.rm("./build")
-liz.mk_dir("./build")
-liz.cmd("cmake", {".."}, "./build", true, true)
-liz.cmd("cmake", {"--build", "."}, "./build", true, true)
