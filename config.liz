@@ -1,0 +1,3 @@
+Liz.rm("build")
+Liz.mkdir("build")
+Liz.cmd("cmake", { "-G", "Ninja", ".." }, "./build", true, true)
