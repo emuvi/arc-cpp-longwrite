@@ -23,10 +23,22 @@ local tst_path = Liz.path_join(dev_path, "Test")
 local cmd_dest = Liz.path_join(tst_path, "cmd")
 local pro_dest = Liz.path_join(cmd_dest, project)
 
+local path_tooled = nil
+local check_tooled = Liz.os_sep() .. "Tooled"
+for _, path in pairs(Liz.path_env_dirs(tst_path)) do
+    if Liz.contains(path, check_tooled) then
+        path_tooled = path
+        break
+    end
+end
+
 if Liz.has("CMakeLists.txt") then
     local origin = "build/bin"
     Liz.rm(pro_dest)
     Liz.cp(origin, pro_dest)
+    if path_tooled then
+        Liz.cp(origin, path_tooled)
+    end
 end
 
 if Liz.has("Cargo.toml") then
