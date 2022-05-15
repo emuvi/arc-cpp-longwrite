@@ -6,9 +6,11 @@
 
 int times = 360;
 int sleep = 500;
-char *file = NULL;
 char *line = (char *)"This is a line!";
-FILE *destiny = stdout;
+FILE *input = NULL;
+char *input_file = NULL;
+FILE *output = stdout;
+char *output_file = NULL;
 
 bool check(char *param, char const *is_short, char const *or_long) {
   return (strcmp(param, is_short) == 0 || strcmp(param, or_long) == 0);
@@ -17,7 +19,7 @@ bool check(char *param, char const *is_short, char const *or_long) {
 void parse(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
     if (check(argv[i], "-e", "---stderr")) {
-      destiny = stderr;
+      output = stderr;
     } else if (check(argv[i], "-t", "--times")) {
       if (i < argc - 1) {
         times = atoi(argv[i + 1]);
@@ -28,14 +30,23 @@ void parse(int argc, char *argv[]) {
         sleep = atoi(argv[i + 1]);
         i++;
       }
-    } else if (check(argv[i], "-f", "--file")) {
-      if (i < argc - 1) {
-        file = argv[i + 1];
-        i++;
-      }
     } else if (check(argv[i], "-l", "--line")) {
       if (i < argc - 1) {
         line = argv[i + 1];
+        i++;
+      }
+    } else if (check(argv[i], "-i", "--input")) {
+      if (i < argc - 1) {
+        if (strcmp(argv[i + 1], "stdin") == 0) {
+          input = stdin;
+        } else {
+          input_file = argv[i + 1];
+        }
+        i++;
+      }
+    } else if (check(argv[i], "-o", "--output")) {
+      if (i < argc - 1) {
+        output_file = argv[i + 1];
         i++;
       }
     }
@@ -44,20 +55,38 @@ void parse(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
   parse(argc, argv);
-  if (file) {
-    errno_t error = fopen_s(&destiny, file, "w");
+  if (output_file) {
+    errno_t error = fopen_s(&output, output_file, "w");
     if (error > 0) {
-      std::cerr << "Could not open the file.\n";
+      std::cerr << "Could not open the output file.\n";
       return 1;
     }
   }
-  fprintf(destiny, "LongWrite starting...\n");
-  fprintf(destiny, "We'll write one line %d times at each %d miliseconds.\n",
-          times, sleep);
-  for (int i = 0; i < times; i++) {
-    fprintf(destiny, "%s\n", line);
-    fflush(destiny);
-    std::this_thread::sleep_for(std::chrono::milliseconds(sleep));
+  fprintf(output, "LongWrite starting...\n");
+  if (input_file) {
+    errno_t error = fopen_s(&input, input_file, "r");
+    if (error > 0) {
+      std::cerr << "Could not open the input file.\n";
+      return 1;
+    }
   }
-  fclose(destiny);
+  if (input) {
+    fprintf(output, "We'll write all the lines from input until EOF.\n");
+    int ch = getc(input);
+    while (ch != EOF) {
+      fprintf(output, "%c", ch);
+      fflush(output);
+      ch = getc(input);
+    }
+    fclose(input);
+  } else {
+    fprintf(output, "We'll write one line %d times at each %d miliseconds.\n",
+            times, sleep);
+    for (int i = 0; i < times; i++) {
+      fprintf(output, "%s\n", line);
+      fflush(output);
+      std::this_thread::sleep_for(std::chrono::milliseconds(sleep));
+    }
+  }
+  fclose(output);
 }
