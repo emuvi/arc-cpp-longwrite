@@ -60,6 +60,7 @@ void parse_args(int argc, char *argv[]) {
 int main(int argc, char *argv[]) {
   parse_args(argc, argv);
   if (output_file) {
+    output = NULL;
     errno_t error = fopen_s(&output, output_file, "w");
     if (error > 0) {
       std::cerr << "Could not open the output file.\n";
@@ -84,12 +85,17 @@ int main(int argc, char *argv[]) {
     }
     fclose(input);
   } else {
-    fprintf(output, "We'll write one line %d times at each %d miliseconds.\n",
+    fprintf(output, "We'll write one line %d times at each %d milliseconds.\n",
             times, sleep);
     for (int i = 0; i < times; i++) {
-      if (output_other && i % 2 != 0) {
-        fprintf(output_other, "%s\n", line_other);
-        fflush(output_other);
+      if (output_other) {
+        if (i % 2 != 0) {
+          fprintf(output_other, "%s\n", line_other);
+          fflush(output_other);
+        } else {
+          fprintf(output, "%s\n", line);
+          fflush(output);
+        }
       } else {
         fprintf(output, "%s\n", line);
         fflush(output);
