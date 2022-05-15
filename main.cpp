@@ -39,6 +39,11 @@ void parse_args(int argc, char *argv[]) {
         line = argv[i + 1];
         i++;
       }
+    } else if (check_arg(argv[i], "-r", "--other")) {
+      if (i < argc - 1) {
+        line_other = argv[i + 1];
+        i++;
+      }
     } else if (check_arg(argv[i], "-i", "--input")) {
       if (i < argc - 1) {
         if (strcmp(argv[i + 1], "stdin") == 0) {
@@ -65,6 +70,9 @@ int main(int argc, char *argv[]) {
     if (error > 0) {
       std::cerr << "Could not open the output file.\n";
       return 1;
+    }
+    if (output_other) {
+      output_other = output;
     }
   }
   fprintf(output, "LongWrite starting...\n");
