@@ -7,9 +7,11 @@
 int times = 360;
 int sleep = 500;
 char *line = (char *)"This is a line!";
+char *line_other = (char *)"This is other line!";
 FILE *input = NULL;
 char *input_file = NULL;
 FILE *output = stdout;
+FILE *output_other = NULL;
 char *output_file = NULL;
 
 bool check(char *param, char const *is_short, char const *or_long) {
@@ -20,6 +22,8 @@ void parse(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
     if (check(argv[i], "-e", "---stderr")) {
       output = stderr;
+    } else if (check(argv[i], "-a", "--alternate")) {
+      output_other = stderr;
     } else if (check(argv[i], "-t", "--times")) {
       if (i < argc - 1) {
         times = atoi(argv[i + 1]);
@@ -83,8 +87,14 @@ int main(int argc, char *argv[]) {
     fprintf(output, "We'll write one line %d times at each %d miliseconds.\n",
             times, sleep);
     for (int i = 0; i < times; i++) {
-      fprintf(output, "%s\n", line);
-      fflush(output);
+      if (output_other && i % 2 != 0) {
+        fprintf(output_other, "%s\n", line_other);
+        fflush(output_other);
+      } else {
+        fprintf(output, "%s\n", line);
+        fflush(output);
+      }
+
       std::this_thread::sleep_for(std::chrono::milliseconds(sleep));
     }
   }
