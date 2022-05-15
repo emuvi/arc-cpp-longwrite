@@ -14,32 +14,32 @@ FILE *output = stdout;
 FILE *output_other = NULL;
 char *output_file = NULL;
 
-bool check(char *param, char const *is_short, char const *or_long) {
+bool check_arg(char *param, char const *is_short, char const *or_long) {
   return (strcmp(param, is_short) == 0 || strcmp(param, or_long) == 0);
 }
 
-void parse(int argc, char *argv[]) {
+void parse_args(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
-    if (check(argv[i], "-e", "---stderr")) {
+    if (check_arg(argv[i], "-e", "---stderr")) {
       output = stderr;
-    } else if (check(argv[i], "-a", "--alternate")) {
+    } else if (check_arg(argv[i], "-a", "--alternate")) {
       output_other = stderr;
-    } else if (check(argv[i], "-t", "--times")) {
+    } else if (check_arg(argv[i], "-t", "--times")) {
       if (i < argc - 1) {
         times = atoi(argv[i + 1]);
         i++;
       }
-    } else if (check(argv[i], "-s", "--sleep")) {
+    } else if (check_arg(argv[i], "-s", "--sleep")) {
       if (i < argc - 1) {
         sleep = atoi(argv[i + 1]);
         i++;
       }
-    } else if (check(argv[i], "-l", "--line")) {
+    } else if (check_arg(argv[i], "-l", "--line")) {
       if (i < argc - 1) {
         line = argv[i + 1];
         i++;
       }
-    } else if (check(argv[i], "-i", "--input")) {
+    } else if (check_arg(argv[i], "-i", "--input")) {
       if (i < argc - 1) {
         if (strcmp(argv[i + 1], "stdin") == 0) {
           input = stdin;
@@ -48,7 +48,7 @@ void parse(int argc, char *argv[]) {
         }
         i++;
       }
-    } else if (check(argv[i], "-o", "--output")) {
+    } else if (check_arg(argv[i], "-o", "--output")) {
       if (i < argc - 1) {
         output_file = argv[i + 1];
         i++;
@@ -58,7 +58,7 @@ void parse(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-  parse(argc, argv);
+  parse_args(argc, argv);
   if (output_file) {
     errno_t error = fopen_s(&output, output_file, "w");
     if (error > 0) {
@@ -94,7 +94,6 @@ int main(int argc, char *argv[]) {
         fprintf(output, "%s\n", line);
         fflush(output);
       }
-
       std::this_thread::sleep_for(std::chrono::milliseconds(sleep));
     }
   }
