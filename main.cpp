@@ -1,5 +1,4 @@
 #include <chrono>
-#include <corecrt_wstdio.h>
 #include <iostream>
 #include <stdio.h>
 #include <thread>
