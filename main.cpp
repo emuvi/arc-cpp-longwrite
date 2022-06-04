@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <thread>
 
-
 int times = 360;
 int sleep = 500;
 char *line = (char *)"This is a line!";
