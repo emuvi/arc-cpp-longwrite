@@ -1,7 +1,9 @@
 #include <chrono>
+#include <cstring>
 #include <iostream>
 #include <stdio.h>
 #include <thread>
+
 
 int times = 360;
 int sleep = 500;
